@@ -70,4 +70,6 @@ return [
         public_path('storage') => storage_path('app/public'),
     ],
 
+    'max_size' => env('MAX_FILE_SIZE', 10000),
+
 ];
