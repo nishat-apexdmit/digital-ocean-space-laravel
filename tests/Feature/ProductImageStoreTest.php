@@ -17,12 +17,34 @@ class ProductImageStoreTest extends TestCase
     use RefreshDatabase,ResponseTrait;
     protected  $product_id=1;
 
+
+    protected Product $product;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config([
+            'filesystems' => [
+                'default' => 'public',
+                'max_size' => 1000,
+            ],
+        ]);
+
+        $this->product = Product::factory()->create();
+    }
+
+
+
+
+
+
     /**
      * @test
     */
     public function validation_fails_with_empty_request()
     {
-        $response = $this->postJson(route('product.store_image', $this->product_id));
+        $response = $this->postJson(route('product.store_image', $this->product->id));
 
         $this->assertResponseUnprocessableWithJson($response, [
             'file' => [__('validation.required', ['attribute' => 'file'])],
@@ -35,7 +57,7 @@ class ProductImageStoreTest extends TestCase
     */
     public function validation_fails_with_empty_value()
     {
-        $response = $this->postJson(route('product.store_image',$this->product_id), [
+        $response = $this->postJson(route('product.store_image',$this->product->id), [
             'file' => '',
         ]);
 
@@ -53,7 +75,7 @@ class ProductImageStoreTest extends TestCase
     {
         Storage::fake();
 
-        $response = $this->postJson(route('product.store_image', $this->product_id), [
+        $response = $this->postJson(route('product.store_image', $this->product->id), [
              'file' => UploadedFile::fake()->create('file.pdf', 1000),
         ]);
 
@@ -77,7 +99,7 @@ class ProductImageStoreTest extends TestCase
     {
         Storage::fake();
 
-        $response = $this->postJson(route('product.store_image', $this->product_id), [
+        $response = $this->postJson(route('product.store_image', $this->product->id), [
             'file' => UploadedFile::fake()->create('file.jpg', 1001, 'image/jpeg'),
         ]);
 

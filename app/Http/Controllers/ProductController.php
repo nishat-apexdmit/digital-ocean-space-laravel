@@ -8,6 +8,9 @@ use App\Http\Requests\UpdateProductRequest;
 
 class ProductController extends Controller
 {
+
+
+
     /**
      * Display a listing of the resource.
      *
@@ -19,6 +22,7 @@ class ProductController extends Controller
                 "status_code"=>1,
                 "status_message"=>"Product List",
                 "data"=>Product::paginate()
+
             ]
         );
     }
