@@ -30,11 +30,11 @@ class ImageVariantProcessor
 
 
 
-    public function generateVariants(UploadedAsset $file, array $variants = [], Closure $process = null): array
+    public function generateVariants( $file, array $variants = [], Closure $process = null): array
     {
-        if (empty($variants) || $file->mime === 'image/svg+xml') {
-            return $this->generateSoleVariants($file);
-        }
+        // if (empty($variants) || $file->mime === 'image/svg+xml') {
+        //     return $this->generateSoleVariants($file);
+        // }
 
         return $this->flatVariants($variants, function (Breakpoint $breakpoint) use ($file, $process) {
             return $this->process($breakpoint, $file, $process);
@@ -45,7 +45,7 @@ class ImageVariantProcessor
 
 
 
-    private function generateSoleVariants(UploadedAsset $file): array
+    private function generateSoleVariants( $file): array
     {
         $variant = new Variant($file->path, $file->disk);
 
@@ -74,7 +74,7 @@ class ImageVariantProcessor
 
 
 
-    private function process(Breakpoint $breakpoint, UploadedAsset $file, ?Closure $process): Variant
+    private function process(Breakpoint $breakpoint,  $file, ?Closure $process): Variant
     {
         $callback = !is_null($breakpoint->process) ? $breakpoint->process : $process;
 
@@ -83,12 +83,13 @@ class ImageVariantProcessor
         }
 
         $source = call_user_func(
-            $callback, $this->manager->make($file->file->path()), $breakpoint
+            $callback, $this->manager->make($file->getRealPath()), $breakpoint
         );
 
         $path = $this->store($file, $breakpoint, $source->stream());
 
-        return new Variant($path, $file->disk);
+
+        return new Variant($path, 'spaces');
     }
 
 
@@ -97,14 +98,14 @@ class ImageVariantProcessor
 
 
 
-    private function store(UploadedAsset $file, Breakpoint $breakpoint, StreamInterface $stream): string
+    private function store( $file, Breakpoint $breakpoint, StreamInterface $stream): string
     {
         Storage::put(
-            $filePath = $file->directory.ds().$breakpoint->index().'-'.$file->fileName,
+            $filePath = 'images'.ds().$breakpoint->index().'-'.'333333',
             $stream,
             [
-                'disk' => $file->disk,
-                'visibility' => $file->visibility,
+                'disk' => 'spaces',
+                'visibility' => 'public',
             ]
         );
 
