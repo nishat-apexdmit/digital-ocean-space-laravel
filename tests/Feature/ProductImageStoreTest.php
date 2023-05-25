@@ -134,6 +134,8 @@ class ProductImageStoreTest extends TestCase
         $this->assertCount(0, $this->product->assets);
 
 
+
+
         $response = $this->postJson(route('product.store_image', $this->product->id), [
             'file' => $image1,
         ]);
@@ -170,9 +172,12 @@ class ProductImageStoreTest extends TestCase
             'mime' => 'image/jpeg',
             'size' => $firstAsset->size,
             'caption' => 'image.jpg',
-            'variants' => $this->variants($firstAsset)->toJson(),
+            'variants' => ($firstVariants = $this->variants($firstAsset))->toJson(),
         ]);
 
+        $firstVariants->each(function (array $variant) {
+            Storage::assertExists($variant['path']);
+        });
 
         $response = $this->postJson(route('product.store_image', $this->product->id), [
             'file' => $image2,
@@ -212,10 +217,16 @@ class ProductImageStoreTest extends TestCase
             'mime' => 'image/png',
             'size' => $secondAsset->size,
             'caption' => 'image-2.png',
-            'variants' => $this->variants($secondAsset)->toJson(),
+            'variants' => ($secondVariants = $this->variants($secondAsset))->toJson(),
         ]);
-    }
 
+        $allVariants = $firstVariants->concat($secondVariants);
+        $this->assertCount(8, $allVariants);
+
+        $allVariants->each(function (array $variant) {
+            Storage::assertExists($variant['path']);
+        });
+    }
 
 
 
